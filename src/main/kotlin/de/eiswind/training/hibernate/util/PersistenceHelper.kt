@@ -88,9 +88,15 @@ object PersistenceHelper {
             "org.hibernate.query.sqm.mutation.internal.inline.InlineMutationStrategy"
         )
         properties.put(AvailableSettings.PREFERRED_INSTANT_JDBC_TYPE, "TIMESTAMP")
+
+
         properties.put(AvailableSettings.STATEMENT_BATCH_SIZE, 50)
+
         if (enableCache) {
-            properties.put(AvailableSettings.CACHE_REGION_FACTORY, "jcache")
+            properties.put(
+                AvailableSettings.CACHE_REGION_FACTORY,
+                "jcache"
+            )
         }
         return properties
     }
@@ -99,7 +105,7 @@ object PersistenceHelper {
     @Volatile
     private var emf: EntityManagerFactory? = null
 
-    val entityManagerFactory: EntityManagerFactory?
+    val entityManagerFactory: EntityManagerFactory
         get() {
             if (emf == null) {
                 synchronized(PersistenceHelper::class.java) {
@@ -110,16 +116,15 @@ object PersistenceHelper {
                     }
                 }
             }
-            return emf
+            return emf!!
         }
 
 
     val entityManager: EntityManager
-        // end::emf[]
-        get() = entityManagerFactory!!.createEntityManager()
+        get() = entityManagerFactory.createEntityManager()
 
-    // end::em[]
-    fun <T> callInHibernate(function: Function<EntityManager?, T?>): T? {
+
+    fun <T> callInHibernate(function: Function<EntityManager, T>): T {
         val em: EntityManager = entityManager
         try {
             return function.apply(em)
@@ -130,8 +135,8 @@ object PersistenceHelper {
         }
     }
 
-    // tag::doinhibernate[]
-    fun doInHibernate(consumer: Consumer<EntityManager?>) {
+
+    fun doInHibernate(consumer: Consumer<EntityManager>) {
         val em: EntityManager = entityManager
         try {
             consumer.accept(em)
@@ -142,8 +147,7 @@ object PersistenceHelper {
         }
     }
 
-    // end::doinhibernate[]
-    // tag::withtransaction[]
+
     fun withTransaction(em: EntityManager, runnable: Runnable) {
         val transaction = em.getTransaction()
         try {
@@ -161,8 +165,8 @@ object PersistenceHelper {
         }
     }
 
-    // end::withtransaction[]
-    fun <V> callInTransaction(em: EntityManager, callable: Callable<V?>): V? {
+
+    fun <V> callInTransaction(em: EntityManager, callable: Callable<V>): V {
         val transaction = em.getTransaction()
         try {
             transaction.begin()
