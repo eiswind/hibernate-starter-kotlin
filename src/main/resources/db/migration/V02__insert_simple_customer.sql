@@ -1,0 +1,5 @@
+INSERT INTO CUSTOMER
+    ("ID", "FIRSTNAME", "LASTNAME")
+VALUES (33, 'Buck', 'Rogers');
+
+
