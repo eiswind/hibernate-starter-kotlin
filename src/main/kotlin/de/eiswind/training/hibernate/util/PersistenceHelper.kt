@@ -88,19 +88,9 @@ object PersistenceHelper {
             "org.hibernate.query.sqm.mutation.internal.inline.InlineMutationStrategy"
         )
         properties.put(AvailableSettings.PREFERRED_INSTANT_JDBC_TYPE, "TIMESTAMP")
-
-        // tag::batch[]
         properties.put(AvailableSettings.STATEMENT_BATCH_SIZE, 50)
-        // properties.put(AvailableSettings.ORDER_INSERTS, true);
-        // properties.put(AvailableSettings.ORDER_UPDATES, true);
-        // end::batch[]
         if (enableCache) {
-            // tag::setting[]
-            properties.put(
-                AvailableSettings.CACHE_REGION_FACTORY,
-                "jcache"
-            )
-            // end::setting[]
+            properties.put(AvailableSettings.CACHE_REGION_FACTORY, "jcache")
         }
         return properties
     }
